@@ -1,6 +1,8 @@
 #lang racket
 
-(define input (map (λ (e) (string->number e)) (file->lines "input/day01.txt")))
+(define input
+  (map (λ (e) (string->number e))
+       (file->lines "input/day01.txt")))
 
 (define (calories-calc calories sum calories-bag)
   (cond [(empty? calories) (cons sum calories-bag)]

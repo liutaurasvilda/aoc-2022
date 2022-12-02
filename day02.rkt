@@ -18,3 +18,24 @@
     [else (rps (cdr guide) (apply + (list score 0 (second (car guide)))))]))
 
 (rps input 0)
+
+(define (rps2 guide score)
+  (cond
+    [(empty? guide) score]
+    [(= (second (car guide)) 1)
+     (cond
+       [(= (first (car guide)) 1) (rps2 (cdr guide) (apply + (list score 0 3)))]
+       [(= (first (car guide)) 2) (rps2 (cdr guide) (apply + (list score 0 1)))]
+       [(= (first (car guide)) 3) (rps2 (cdr guide) (apply + (list score 0 2)))])]
+    [(= (second (car guide)) 2)
+     (cond
+       [(= (first (car guide)) 1) (rps2 (cdr guide) (apply + (list score 3 1)))]
+       [(= (first (car guide)) 2) (rps2 (cdr guide) (apply + (list score 3 2)))]
+       [(= (first (car guide)) 3) (rps2 (cdr guide) (apply + (list score 3 3)))])]
+    [(= (second (car guide)) 3)
+     (cond
+       [(= (first (car guide)) 1) (rps2 (cdr guide) (apply + (list score 6 2)))]
+       [(= (first (car guide)) 2) (rps2 (cdr guide) (apply + (list score 6 3)))]
+       [(= (first (car guide)) 3) (rps2 (cdr guide) (apply + (list score 6 1)))])]))
+
+(rps2 input 0)

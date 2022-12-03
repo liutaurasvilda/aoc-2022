@@ -9,7 +9,7 @@
 
 (define (intersect-slice l result)
   (cond [(empty? l) result]
-        [(> (length l) 3) (intersect-slice (cdddr l) (append (set-intersect (first l) (second l) (third l)) result))]
-        [else (intersect-slice '() (append (set-intersect (first l) (second l) (third l)) result))]))
+        [(> (length l) 3) (intersect-slice (cdddr l) (append (set-intersect (car l) (cadr l) (caddr l)) result))]
+        [else (intersect-slice '() (append (set-intersect (car l) (cadr l) (caddr l)) result))]))
                     
 (apply + (map (λ (e) (hash-ref h e)) (intersect-slice input '())))

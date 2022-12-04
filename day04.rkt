@@ -8,15 +8,10 @@
 
 (define (play input sum)
   (cond [(empty? input) sum]
-        [(< (car (car (car input))) (car (cadr (car input))))
-         (if (= (length (set-intersect (car (car input)) (cadr (car input)))) (length (cadr (car input)))) (play (cdr input) (add1 sum)) (play (cdr input) sum))]
-        [(> (car (car (car input))) (car (cadr (car input))))
-         (if (= (length (set-intersect (car (car input)) (cadr (car input)))) (length (car (car input)))) (play (cdr input) (add1 sum)) (play (cdr input) sum))]
-        [(and (= (car (car (car input))) (car (cadr (car input)))) (= (last (car (car input))) (last (cadr (car input))))) (play (cdr input) (add1 sum))]
-        [(= (car (car (car input))) (car (cadr (car input))))
-         (cond [(< (last (car (car input))) (last (cadr (car input))))
-                (if (= (length (set-intersect (car (car input)) (cadr (car input)))) (length (car (car input)))) (play (cdr input) (add1 sum)) (play (cdr input) sum))]
-               [else (if (= (length (set-intersect (car (car input)) (cadr (car input)))) (length (cadr (car input)))) (play (cdr input) (add1 sum)) (play (cdr input) sum))])]))
+        [(or (= (length (set-intersect (car (car input)) (cadr (car input)))) (length (car (car input))))
+             (= (length (set-intersect (car (car input)) (cadr (car input))))(length (cadr (car input)))))
+         (play (cdr input) (add1 sum))]
+        [else (play (cdr input) sum)]))
 
 (define (play2 input sum)
   (cond [(empty? input) sum]

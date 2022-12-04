@@ -6,17 +6,10 @@
             (map (λ (e) (list (string-split (car e) "-") (string-split (cadr e) "-")))
                  (map (λ (e) (string-split e ",")) (file->lines "input/day04.txt"))))))
 
-(define (play input sum)
+(define (play input sum f)
   (cond [(empty? input) sum]
-        [(or (= (length (set-intersect (car (car input)) (cadr (car input)))) (length (car (car input))))
-             (= (length (set-intersect (car (car input)) (cadr (car input))))(length (cadr (car input)))))
-         (play (cdr input) (add1 sum))]
-        [else (play (cdr input) sum)]))
+        [(f (car input)) (play (cdr input) (add1 sum) f)]
+        [else (play (cdr input) sum f)]))
 
-(define (play2 input sum)
-  (cond [(empty? input) sum]
-        [(not (empty? (set-intersect (car (car input)) (cadr (car input))))) (play2 (cdr input) (add1 sum))]
-        [else (play2 (cdr input) sum)]))
-
-(play input 0)
-(play2 input 0)
+(play input 0 (λ (e) (or (= (length (set-intersect (car e) (cadr e))) (length (car e))) (= (length (set-intersect (car e) (cadr e)))(length (cadr e))))))
+(play input 0 (λ (e) (not (empty? (set-intersect (car e) (cadr e))))))

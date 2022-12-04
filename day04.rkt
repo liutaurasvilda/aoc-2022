@@ -8,8 +8,7 @@
 
 (define (play input sum f)
   (cond [(empty? input) sum]
-        [(f (car input)) (play (cdr input) (add1 sum) f)]
-        [else (play (cdr input) sum f)]))
+        [(if (f (car input)) (play (cdr input) (add1 sum) f) (play (cdr input) sum f))]))
 
 (play input 0 (λ (e) (or (= (length (set-intersect (car e) (cadr e))) (length (car e))) (= (length (set-intersect (car e) (cadr e))) (length (cadr e))))))
 (play input 0 (λ (e) (not (empty? (set-intersect (car e) (cadr e))))))

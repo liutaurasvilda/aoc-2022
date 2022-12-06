@@ -6,5 +6,5 @@
   (cond [(not (check-duplicates (take input slice))) count]
         [else (play (cdr input) slice (add1 count))]))
 
-(play input 4 4)   ; 1760
-(play input 14 14) ; 2974
+(play input 4 4)
+(play input 14 14)

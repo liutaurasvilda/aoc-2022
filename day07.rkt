@@ -19,46 +19,30 @@
         [(equal? (first (car input)) "$")
          (cond [(equal? (second (car input)) "cd") (build-tree (cdr input) (cd (third (car input)) dir-tree) ht)]
                [(equal? (second (car input)) "ls") (build-tree (cdr input) dir-tree ht)])]
-        [else (build-tree
-               (cdr input)
-               dir-tree
-               (hash-set ht
-                         (key dir-tree)
-                         (append
-                          (if (hash-has-key? ht (key dir-tree))
-                              (hash-ref ht (key dir-tree))
-                              '())
-                          (list (car input))))
-               )]))
+        [else (build-tree (cdr input) dir-tree
+                          (hash-set ht (key dir-tree)
+                                    (append
+                                     (if (hash-has-key? ht (key dir-tree)) (hash-ref ht (key dir-tree)) '())
+                                     (list (car input)))))]))
 
 (define tree-struct-temp (build-tree input '() (hash)))
-
-;tree-struct-temp
-;(displayln "")
 
 (define (composite-keys ht keys)
   (cond [(empty? keys) ht]
         [else (composite-keys
                (hash-set ht (car keys)
-                         (append 
+                         (append
                           (map
-                           (λ (e) (list "dir" (string-join (list (car keys) (cadr e)) "-"))) (filter
-                                                                                              (λ (e) (equal? (car e) "dir"))
-                                                                                              (hash-ref ht (car keys))))
-                          (filter (λ (e) (not (equal? (car e) "dir"))) (hash-ref ht (car keys)))
-                          ))
-                         (cdr keys))]))
+                           (λ (e) (list "dir" (string-join (list (car keys) (cadr e)) "-"))) (filter (λ (e) (equal? (car e) "dir")) (hash-ref ht (car keys))))
+                          (filter (λ (e) (not (equal? (car e) "dir"))) (hash-ref ht (car keys))))) (cdr keys))]))
 
 (define tree-struct (composite-keys tree-struct-temp (hash-keys tree-struct-temp)))
 
-tree-struct
-(displayln "")
-
 ;--------------------------------------
 
-(define (liu ht l res)
+(define (replace-dir ht l res)
   (cond [(empty? l) res]
-        [else (liu ht (cdr l) (append res (hash-ref ht (cadr (car l)))))]))
+        [else (replace-dir ht (cdr l) (append res (hash-ref ht (cadr (car l)))))]))
 
 
 (define (tree-leaves ht key)
@@ -67,22 +51,14 @@ tree-struct
          (tree-leaves
           (hash-set ht key
                     (append
-                     (liu ht (filter (λ (e) (equal? (car e) "dir")) (hash-ref ht key)) '())
-                     (filter (λ (e) (not (equal? (car e) "dir"))) (hash-ref ht key))
-                     ))
-          key)
-         ]))
-
-;(tree-leaves tree-struct "/")
+                     (replace-dir ht (filter (λ (e) (equal? (car e) "dir")) (hash-ref ht key)) '())
+                     (filter (λ (e) (not (equal? (car e) "dir"))) (hash-ref ht key)))) key)]))
 
 (define (tree-with-leaves ht keys)
   (cond [(empty? keys) ht]
         [else (tree-with-leaves (tree-leaves ht (car keys)) (cdr keys))]))
 
 (define tree-with-leaves-struct (tree-with-leaves tree-struct (hash-keys tree-struct)))
-
-tree-with-leaves-struct
-(displayln "")
 
 ;--------------------------------------
 
@@ -96,4 +72,7 @@ tree-with-leaves-struct
   (cond [(empty? values) sum]
         [else (if (< (car values) 100001) (solve (cdr values) (+ sum (car values))) (solve (cdr values) sum))]))
 
+(define space-to-free-up (- 30000000 (- 70000000 (hash-ref tree-with-sizes-struct "/"))))
+
 (solve (hash-values tree-with-sizes-struct) 0)
+(car (car (sort (filter (λ (e) (> (cadr e) -1)) (map (λ (e) (list e (- e space-to-free-up))) (hash-values tree-with-sizes-struct))) (λ (x y) (< (second x) (second y))))))

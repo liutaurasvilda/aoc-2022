@@ -1,6 +1,6 @@
 #lang racket
 
-(define input (map (λ (e) (string-split e " ")) (file->lines "input/day07_test.txt")))
+(define input (map (λ (e) (string-split e " ")) (file->lines "input/day07.txt")))
 
 ;--------------------------------------
 
@@ -9,8 +9,8 @@
         [(equal? symbol "..") (drop-right dir-tree 1)]
         [else (append dir-tree (list symbol))]))
 
-(define (pwd dir-tree)
-  (last dir-tree))
+(define (key dir-tree)
+  (string-join dir-tree "-"))
 
 ;--------------------------------------
 
@@ -22,26 +22,67 @@
         [else (build-tree
                (cdr input)
                dir-tree
-               (hash-set ht (pwd dir-tree) (append (if (hash-has-key? ht (pwd dir-tree)) (hash-ref ht (pwd dir-tree )) '()) (list (car input))))
+               (hash-set ht
+                         (key dir-tree)
+                         (append
+                          (if (hash-has-key? ht (key dir-tree))
+                              (hash-ref ht (key dir-tree))
+                              '())
+                          (list (car input))))
                )]))
 
-(define tree-struct (build-tree input '() (hash)))
+(define tree-struct-temp (build-tree input '() (hash)))
 
-tree-struct ; <= printing
+;tree-struct-temp
+;(displayln "")
+
+(define (composite-keys ht keys)
+  (cond [(empty? keys) ht]
+        [else (composite-keys
+               (hash-set ht (car keys)
+                         (append 
+                          (map
+                           (λ (e) (list "dir" (string-join (list (car keys) (cadr e)) "-"))) (filter
+                                                                                              (λ (e) (equal? (car e) "dir"))
+                                                                                              (hash-ref ht (car keys))))
+                          (filter (λ (e) (not (equal? (car e) "dir"))) (hash-ref ht (car keys)))
+                          ))
+                         (cdr keys))]))
+
+(define tree-struct (composite-keys tree-struct-temp (hash-keys tree-struct-temp)))
+
+tree-struct
+(displayln "")
 
 ;--------------------------------------
+
+(define (liu ht l res)
+  (cond [(empty? l) res]
+        [else (liu ht (cdr l) (append res (hash-ref ht (cadr (car l)))))]))
+
 
 (define (tree-leaves ht key)
   (cond [(empty? (filter (λ (e) (equal? (car e) "dir")) (hash-ref ht key))) ht]
         [else
-         (tree-leaves (hash-set ht key (append (car (map (λ (e) (hash-ref ht (cadr e))) (filter (λ (e) (equal? (car e) "dir")) (hash-ref ht key)))) (filter (λ (e) (not (equal? (car e) "dir"))) (hash-ref ht key)))) key)
+         (tree-leaves
+          (hash-set ht key
+                    (append
+                     (liu ht (filter (λ (e) (equal? (car e) "dir")) (hash-ref ht key)) '())
+                     (filter (λ (e) (not (equal? (car e) "dir"))) (hash-ref ht key))
+                     ))
+          key)
          ]))
+
+;(tree-leaves tree-struct "/")
 
 (define (tree-with-leaves ht keys)
   (cond [(empty? keys) ht]
         [else (tree-with-leaves (tree-leaves ht (car keys)) (cdr keys))]))
 
 (define tree-with-leaves-struct (tree-with-leaves tree-struct (hash-keys tree-struct)))
+
+tree-with-leaves-struct
+(displayln "")
 
 ;--------------------------------------
 
@@ -55,4 +96,4 @@ tree-struct ; <= printing
   (cond [(empty? values) sum]
         [else (if (< (car values) 100001) (solve (cdr values) (+ sum (car values))) (solve (cdr values) sum))]))
 
-;(solve (hash-values tree-with-sizes-struct) 0)
+(solve (hash-values tree-with-sizes-struct) 0)

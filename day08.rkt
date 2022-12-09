@@ -12,7 +12,19 @@
 (define (solve input)
   (for* ([i (in-range (length input))]
          [j (in-range (length (car input)))])
-           (let ([tree (list-ref (list-ref input i) j)])
-             (update ht))))
+    (let ([tree (list-ref (list-ref input i) j)])
+      (if
+       (or
+        (= i 0) (= j 0) (= i (- (length input) 1)) (= j (- (length (car input)) 1))
+        (or
+         (< (list-ref (list-ref input (- i 1)) j) tree)
+         (< (list-ref (list-ref input (+ i 1)) j) tree)
+         (< (list-ref (list-ref input i) (- j 1)) tree)
+         (< (list-ref (list-ref input i) (+ j 1)) tree)
+         )
+        )
+       (update ht)
+       (display "")
+       ))))
 
 (solve input)

@@ -11,15 +11,20 @@
   (or (> (abs (- (first head) (first tail))) 1)
       (> (abs (- (second head) (second tail))) 1)))
 
-(define (move-head head-path direction distance)
-  (cond [(equal? direction "U") TODO]
-        [(equal? direction "D") TODO]
-        [(equal? direction "L") TODO]
-        [(equal? direction "R") TODO]))
-
 (define (move-tail head-path tail-path)
   (cond [(need-move? (first head-path) (first tail-path)) TODO]
         [else tail-path]))
+
+(define (move-head head-path direction distance)
+  (cond [(> distance 0)
+         (let* ([head (car head-path)]
+                [i (first head)]
+                [j (second head)])
+           (cond [(equal? direction "U") (move-head (cons (list (- i 1) j) head-path) direction (- distance 1))]
+                 [(equal? direction "D") (move-head (cons (list (+ i 1) j) head-path) direction (- distance 1))]
+                 [(equal? direction "L") (move-head (cons (list i (- j 1)) head-path) direction (- distance 1))]
+                 [(equal? direction "R") (move-head (cons (list i (+ j 1)) head-path) direction (- distance 1))]))]
+        [else head-path]))
 
 (define (solve input head-path tail-path)
   (cond [(empty? input) (length (remove-duplicates tail-path))]

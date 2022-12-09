@@ -4,10 +4,19 @@
                    (file->lines "input/day08.txt")))
 
 (define ht (make-hash))
-(hash-set! ht "sum" 0)
+(hash-set! ht "visible-trees" 0)
+(hash-set! ht "scenic-score" 0)
 
-(define (update ht)
-  (hash-set! ht "sum" (add1 (hash-ref ht "sum"))))
+(define (update-visible ht)
+  (hash-set! ht "visible-trees" (add1 (hash-ref ht "visible-trees"))))
+
+(define (update-scenic ht score)
+  (cond [(> score (hash-ref ht "scenic-score")) (hash-set! ht "scenic-score" score)]))
+
+(define (count-scenic input tree result)
+  (cond [(empty? input) (length result)]
+        [(or (= (car input) tree) (> (car input) tree)) (length (cons (car input) result))]
+        [else (count-scenic (cdr input) tree (cons (car input) result))]))
 
 (define (left input i j)
   (take (list-ref input i) j))
@@ -37,7 +46,24 @@
       (cond [(or
               (= i 0) (= j 0) (= i (- (length input) 1)) (= j (- (length (car input)) 1))
               (visible input tree i j))
-             (update ht)])))
-  (hash-ref ht "sum"))
+             (update-visible ht)])))
+  (hash-ref ht "visible-trees"))
+
+(define (solve2 input)
+  (for* ([i (in-range (length input))]
+         [j (in-range (length (car input)))])
+    (let ([tree (list-ref (list-ref input i) j)])
+      (cond
+        [(or
+          (= i 0) (= j 0) (= i (- (length input) 1)) (= j (- (length (car input)) 1))) (display "")]
+        [else
+         (update-scenic ht (*
+                            (count-scenic (reverse (up input i j)) tree '())
+                            (count-scenic (reverse (left input i j)) tree '())
+                            (count-scenic (right input i j) tree '())
+                            (count-scenic (down input i j) tree '())))]
+        )))
+  (hash-ref ht "scenic-score"))
 
 (solve input)
+(solve2 input)

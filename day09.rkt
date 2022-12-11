@@ -1,20 +1,9 @@
 #lang racket
-(require rackunit)
 
 (define input
   (map (λ (e) (list (car e) (string->number (cadr e))))
        (map (λ (e) (string-split e " "))
             (file->lines "input/day09.txt"))))
-
-(define test-input
-  (map (λ (e) (list (car e) (string->number (cadr e))))
-       (map (λ (e) (string-split e " "))
-            (file->lines "input/day09_test.txt"))))
-
-(define test-input-2
-  (map (λ (e) (list (car e) (string->number (cadr e))))
-       (map (λ (e) (string-split e " "))
-            (file->lines "input/day09_test2.txt"))))
 
 (define tracker (mutable-set))
 
@@ -40,11 +29,9 @@
                   (cond
                     [(and (= tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) tail-j)]
                     [(and (= tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) tail-j)]
-                    
                     [(and (< tail-j head-j) (= tail-i head-i)) (list tail-i (+ tail-j 1))]
                     [(and (< tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) (+ tail-j 1))]
                     [(and (< tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) (+ tail-j 1))]
-
                     [(and (> tail-j head-j) (= tail-i head-i)) (list tail-i (- tail-j 1))]
                     [(and (> tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) (- tail-j 1))]
                     [(and (> tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) (- tail-j 1))])]
@@ -52,11 +39,9 @@
                   (cond
                     [(and (= tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) tail-j)]
                     [(and (= tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) tail-j)]
-                    
                     [(and (< tail-j head-j) (= tail-i head-i)) (list tail-i (+ tail-j 1))]
                     [(and (< tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) (+ tail-j 1))]
                     [(and (< tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) (+ tail-j 1))]
-
                     [(and (> tail-j head-j) (= tail-i head-i)) (list tail-i (- tail-j 1))]
                     [(and (> tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) (- tail-j 1))]
                     [(and (> tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) (- tail-j 1))])]
@@ -64,11 +49,9 @@
                   (cond
                     [(and (= tail-i head-i) (> tail-j head-j)) (list tail-i (- tail-j 1))]
                     [(and (= tail-i head-i) (< tail-j head-j)) (list tail-i (+ tail-j 1))]
-
                     [(and (< tail-i head-i) (= tail-j head-j)) (list (+ tail-i 1) tail-j)]
                     [(and (< tail-i head-i) (> tail-j head-j)) (list (+ tail-i 1) (- tail-j 1))]
                     [(and (< tail-i head-i) (< tail-j head-j)) (list (+ tail-i 1) (+ tail-j 1))]
-                    
                     [(and (> tail-i head-i) (= tail-j head-j)) (list (- tail-i 1) tail-j)]
                     [(and (> tail-i head-i) (> tail-j head-j)) (list (- tail-i 1) (- tail-j 1))]
                     [(and (> tail-i head-i) (< tail-j head-j)) (list (- tail-i 1) (+ tail-j 1))])]
@@ -76,11 +59,9 @@
                   (cond
                     [(and (= tail-i head-i) (> tail-j head-j)) (list tail-i (- tail-j 1))]
                     [(and (= tail-i head-i) (< tail-j head-j)) (list tail-i (+ tail-j 1))]
-                    
                     [(and (< tail-i head-i) (= tail-j head-j)) (list (+ tail-i 1) tail-j)]
                     [(and (< tail-i head-i) (> tail-j head-j)) (list (+ tail-i 1) (- tail-j 1))]
-                    [(and (< tail-i head-i) (< tail-j head-j)) (list (+ tail-i 1) (+ tail-j 1))]
-                    
+                    [(and (< tail-i head-i) (< tail-j head-j)) (list (+ tail-i 1) (+ tail-j 1))]    
                     [(and (> tail-i head-i) (= tail-j head-j)) (list (- tail-i 1) tail-j)]
                     [(and (> tail-i head-i) (> tail-j head-j)) (list (- tail-i 1) (- tail-j 1))]
                     [(and (> tail-i head-i) (< tail-j head-j)) (list (- tail-i 1) (+ tail-j 1))])])]

@@ -38,7 +38,8 @@
     (cond [(need-move? head tail)
            (cond [(equal? direction "U")
                   (cond
-                    [(= tail-j head-j) (list (- tail-i 1) tail-j)]
+                    [(and (= tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) tail-j)]
+                    [(and (= tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) tail-j)]
                     
                     [(and (< tail-j head-j) (= tail-i head-i)) (list tail-i (+ tail-j 1))]
                     [(and (< tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) (+ tail-j 1))]
@@ -49,7 +50,8 @@
                     [(and (> tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) (- tail-j 1))])]
                  [(equal? direction "D")
                   (cond
-                    [(= tail-j head-j) (list (+ tail-i 1) tail-j)]
+                    [(and (= tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) tail-j)]
+                    [(and (= tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) tail-j)]
                     
                     [(and (< tail-j head-j) (= tail-i head-i)) (list tail-i (+ tail-j 1))]
                     [(and (< tail-j head-j) (> tail-i head-i)) (list (- tail-i 1) (+ tail-j 1))]
@@ -60,7 +62,8 @@
                     [(and (> tail-j head-j) (< tail-i head-i)) (list (+ tail-i 1) (- tail-j 1))])]
                  [(equal? direction "L")
                   (cond
-                    [(= tail-i head-i) (list tail-i (- tail-j 1))]
+                    [(and (= tail-i head-i) (> tail-j head-j)) (list tail-i (- tail-j 1))]
+                    [(and (= tail-i head-i) (< tail-j head-j)) (list tail-i (+ tail-j 1))]
 
                     [(and (< tail-i head-i) (= tail-j head-j)) (list (+ tail-i 1) tail-j)]
                     [(and (< tail-i head-i) (> tail-j head-j)) (list (+ tail-i 1) (- tail-j 1))]
@@ -71,7 +74,8 @@
                     [(and (> tail-i head-i) (< tail-j head-j)) (list (- tail-i 1) (+ tail-j 1))])]
                  [(equal? direction "R")
                   (cond
-                    [(= tail-i head-i) (list tail-i (+ tail-j 1))]
+                    [(and (= tail-i head-i) (> tail-j head-j)) (list tail-i (- tail-j 1))]
+                    [(and (= tail-i head-i) (< tail-j head-j)) (list tail-i (+ tail-j 1))]
                     
                     [(and (< tail-i head-i) (= tail-j head-j)) (list (+ tail-i 1) tail-j)]
                     [(and (< tail-i head-i) (> tail-j head-j)) (list (+ tail-i 1) (- tail-j 1))]
@@ -108,8 +112,8 @@
 
 (define (move-rope rope direction distance)
   (cond [(and (< distance 1)
-          (not (member #t (for/list ([i (in-range 0 (- (length rope) 1))])
-                            (need-move? (list-ref rope i) (list-ref rope (add1 i))))))) rope]
+              (not (member #t (for/list ([i (in-range 0 (- (length rope) 1))])
+                                (need-move? (list-ref rope i) (list-ref rope (add1 i))))))) rope]
         [else
          (let ([new-rope (move-knots rope direction distance)])
            (set-add! tracker (last new-rope))
@@ -121,4 +125,4 @@
          (let ([new-rope (move-rope rope (first (car input)) (second (car input)))])
            (solve2 (cdr input) new-rope))]))
 
-;(solve2 input '((0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0)))
+(solve2 input '((0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0)))

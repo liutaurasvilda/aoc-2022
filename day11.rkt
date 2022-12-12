@@ -2,6 +2,14 @@
 
 (struct monkey ([items #:mutable] operation throw-to) #:transparent)
 
+(define (throw-item a b)
+  (let* ([a-items (monkey-items a)]
+         [b-items (monkey-items b)]
+         [a-updated (cdr a-items)]
+         [b-updated (append b-items (list (first a-items)))])
+    (set-monkey-items! a a-updated)
+    (set-monkey-items! b b-updated)))
+
 (define monkey-0
   (monkey
    '(79 98)

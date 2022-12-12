@@ -132,7 +132,6 @@
          (cond [(empty? queue) (solve monkeys monkeys (add1 round) required-rounds)]
                [else
                 (inspect (car queue) monkeys)
-                (displayln "")
                 (solve (cdr queue) monkeys round required-rounds)])]))
 
 (solve monkeys monkeys 1 1)

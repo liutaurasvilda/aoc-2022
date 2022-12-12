@@ -8,8 +8,8 @@
 
 (define (increase-inspected monkey)
   (let* ([monkey-name (monkey-name monkey)]
-        [current-inspect-count (hash-ref h monkey-name)]
-        [updated-inspect-count (add1 current-inspect-count)])
+         [current-inspect-count (hash-ref h monkey-name)]
+         [updated-inspect-count (add1 current-inspect-count)])
     (hash-set! h monkey-name updated-inspect-count)))
 
 (struct monkey (name [items #:mutable] operation throw-to) #:transparent)
@@ -50,10 +50,17 @@
    (λ (e) (inexact->exact (/ (+ e 3) 3)))
    (λ (e) (if (= (modulo e 17) 0) 0 1))))
 
+(define (inspect monkey monkeys)
+  (let ([items (monkey-items monkey)]
+        [operation-f (monkey-operation monkey)]
+        [throw-to-f (monkey-throw-to monkey)])
+    (for ([i items])
+      (display i))
+
 (define (solve queue monkeys round required-rounds)
   (cond [(> round required-rounds) (apply * (take (sort (hash-values h) >) 2))]
         [else
          (cond [(empty? queue) (solve monkeys monkeys (add1 round) required-rounds)]
                [else
-                (displayln "todo monkey inspection")
+                (inspect (car queue) monkeys)
                 (solve (cdr queue) monkeys round required-rounds)])]))

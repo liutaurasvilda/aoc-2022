@@ -1,37 +1,35 @@
 #lang racket
 
-(struct monkey (name [items #:mutable] operation test-outcome throw-to) #:transparent)
+(struct monkey (name [items #:mutable] operation throw-to) #:transparent)
+
+(define worry-reducer 3)
 
 (define monkey-0
   (monkey
    "0"
    '(79 98)
-   (λ (e) (* e 19))
-   (λ (e) (modulo e 23))
+   (λ (e) (floor (/ (* e 19) worry-reducer)))
    (λ (e) (if (= (modulo e 23) 0) 2 3))))
 
 (define monkey-1
   (monkey
    "1"
    '(54 65 75 74)
-   (λ (e) (+ e 6))
-   (λ (e) (modulo e 19))
+   (λ (e) (floor (/ (+ e 6) worry-reducer)))
    (λ (e) (if (= (modulo e 19) 0) 2 0))))
 
 (define monkey-2
   (monkey
    "2"
    '(79 60 97)
-   (λ (e) (* e e))
-   (λ (e) (modulo e 13))
+   (λ (e) (floor (/ (* e e) worry-reducer)))
    (λ (e) (if (= (modulo e 13) 0) 1 3))))
 
 (define monkey-3
   (monkey
    "3"
    '(74)
-   (λ (e) (+ e 3))
-   (λ (e) (modulo e 17))
+   (λ (e) (floor (/ (+ e 3) worry-reducer)))
    (λ (e) (if (= (modulo e 17) 0) 0 1))))
 
 #| REAL INPUT
@@ -41,49 +39,42 @@
    '(54 82 90 88 86 54)
    (λ (e) (floor (/ (* e 7) worry-reducer)))
    (λ (e) (if (= (modulo e 11) 0) 2 6))))
-
 (define monkey-1
   (monkey
    "1"
    '(91 65)
    (λ (e) (floor (/ (* e 13) worry-reducer)))
    (λ (e) (if (= (modulo e 5) 0) 7 4))))
-
 (define monkey-2
   (monkey
    "2"
    '(62 54 57 92 83 63 63)
    (λ (e) (floor (/ (+ e 1) worry-reducer)))
    (λ (e) (if (= (modulo e 7) 0) 1 7))))
-
 (define monkey-3
   (monkey
    "3"
    '(67 72 68)
    (λ (e) (floor (/ (* e e) worry-reducer)))
    (λ (e) (if (= (modulo e 2) 0) 0 6))))
-
 (define monkey-4
   (monkey
    "4"
    '(68 89 90 86 84 57 72 84)
    (λ (e) (floor (/ (+ e 7) worry-reducer)))
    (λ (e) (if (= (modulo e 17) 0) 3 5))))
-
 (define monkey-5
   (monkey
    "5"
    '(79 83 64 58)
    (λ (e) (floor (/ (+ e 6) worry-reducer)))
    (λ (e) (if (= (modulo e 13) 0) 3 0))))
-
 (define monkey-6
   (monkey
    "6"
    '(96 72 89 70 88)
    (λ (e) (floor (/ (+ e 4) worry-reducer)))
    (λ (e) (if (= (modulo e 3) 0) 1 2))))
-
 (define monkey-7
   (monkey
    "7"
@@ -115,8 +106,7 @@
   (let* ([a-items (monkey-items a)]
          [b-items (monkey-items b)]
          [a-updated (cdr a-items)]
-         [reduced-worry ((monkey-test-outcome b) worry)]
-         [b-updated (append b-items (list reduced-worry))])
+         [b-updated (append b-items (list worry))])
     (increase-inspected a)
     (set-monkey-items! a a-updated)
     (set-monkey-items! b b-updated)))
@@ -125,8 +115,8 @@
   (let ([items (monkey-items monkey)])
     (for ([i items])
       (let* ([worry ((monkey-operation monkey) i)]
-             [throw-to ((monkey-throw-to monkey) worry)])
-        (throw-item monkey (list-ref monkeys throw-to) worry)))))
+            [throw-to ((monkey-throw-to monkey) worry)])
+      (throw-item monkey (list-ref monkeys throw-to) worry)))))
 
 (define (solve queue monkeys round required-rounds)
   (cond [(> round required-rounds) (apply * (take (sort (hash-values h) >) 2))]
@@ -136,5 +126,4 @@
                 (inspect (car queue) monkeys)
                 (solve (cdr queue) monkeys round required-rounds)])]))
 
-(solve monkeys monkeys 1 1000)
-h
+(solve monkeys monkeys 1 20)

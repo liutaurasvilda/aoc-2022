@@ -7,5 +7,8 @@
   (map (λ (e) (map to-number (string->list e)))
        (file->lines "input/day12_test.txt")))
 
+(define start '(0 0))
+(define goal '(2 5))
+
 (define (solve heightmap location visited paths)
   (displayln "not implemented"))

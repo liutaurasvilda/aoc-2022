@@ -2,37 +2,9 @@
 
 (struct monkey (name [items #:mutable] operation throw-to) #:transparent)
 
-(define worry-reducer 3)
+(define worry-reducer 1)
+(define lcm (* 11 5 7 2 17 13 3 19))
 
-(define monkey-0
-  (monkey
-   "0"
-   '(79 98)
-   (λ (e) (floor (/ (* e 19) worry-reducer)))
-   (λ (e) (if (= (modulo e 23) 0) 2 3))))
-
-(define monkey-1
-  (monkey
-   "1"
-   '(54 65 75 74)
-   (λ (e) (floor (/ (+ e 6) worry-reducer)))
-   (λ (e) (if (= (modulo e 19) 0) 2 0))))
-
-(define monkey-2
-  (monkey
-   "2"
-   '(79 60 97)
-   (λ (e) (floor (/ (* e e) worry-reducer)))
-   (λ (e) (if (= (modulo e 13) 0) 1 3))))
-
-(define monkey-3
-  (monkey
-   "3"
-   '(74)
-   (λ (e) (floor (/ (+ e 3) worry-reducer)))
-   (λ (e) (if (= (modulo e 17) 0) 0 1))))
-
-#| REAL INPUT
 (define monkey-0
   (monkey
    "0"
@@ -75,26 +47,25 @@
    '(96 72 89 70 88)
    (λ (e) (floor (/ (+ e 4) worry-reducer)))
    (λ (e) (if (= (modulo e 3) 0) 1 2))))
+
 (define monkey-7
   (monkey
    "7"
    '(79)
-   (λ (e) (floor (/ (+ e 8) 3)))
+   (λ (e) (floor (/ (+ e 8) worry-reducer)))
    (λ (e) (if (= (modulo e 19) 0) 4 5))))
-|#
 
 (define h (make-hash))
 (hash-set! h "0" 0)
 (hash-set! h "1" 0)
 (hash-set! h "2" 0)
 (hash-set! h "3" 0)
-;(hash-set! h "4" 0)
-;(hash-set! h "5" 0)
-;(hash-set! h "6" 0)
-;(hash-set! h "7" 0)
+(hash-set! h "4" 0)
+(hash-set! h "5" 0)
+(hash-set! h "6" 0)
+(hash-set! h "7" 0)
 
-;(define monkeys (list monkey-0 monkey-1 monkey-2 monkey-3 monkey-4 monkey-5 monkey-6 monkey-7))
-(define monkeys (list monkey-0 monkey-1 monkey-2 monkey-3))
+(define monkeys (list monkey-0 monkey-1 monkey-2 monkey-3 monkey-4 monkey-5 monkey-6 monkey-7))
 
 (define (increase-inspected monkey)
   (let* ([monkey-name (monkey-name monkey)]
@@ -115,8 +86,9 @@
   (let ([items (monkey-items monkey)])
     (for ([i items])
       (let* ([worry ((monkey-operation monkey) i)]
-            [throw-to ((monkey-throw-to monkey) worry)])
-      (throw-item monkey (list-ref monkeys throw-to) worry)))))
+             [reduced-worry (modulo worry lcm)]
+             [throw-to ((monkey-throw-to monkey) worry)])
+        (throw-item monkey (list-ref monkeys throw-to) reduced-worry)))))
 
 (define (solve queue monkeys round required-rounds)
   (cond [(> round required-rounds) (apply * (take (sort (hash-values h) >) 2))]
@@ -126,4 +98,4 @@
                 (inspect (car queue) monkeys)
                 (solve (cdr queue) monkeys round required-rounds)])]))
 
-(solve monkeys monkeys 1 20)
+(solve monkeys monkeys 1 10000)

@@ -28,7 +28,11 @@
           [(equal? next-element 0) #t]
           [else (= (add1 current-element) next-element)])))
 
-(define (solve location visited paths)
+(define (neighbours-of location)
+  (list (location->up location) (location->down location)
+        (location->left location) (location->right location)))
+
+(define (solve location visited)
   (displayln "not implemented"))
 
 (define start '(0 0))

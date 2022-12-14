@@ -1,7 +1,13 @@
 #lang racket
+(require data/queue)
+(require dyoo-while-loop)
 
 (define to-number
-  (λ (e) (if (char-upper-case? e) 0 (- (char->integer e) 96))))
+  (λ (e)
+    (if
+     (char-upper-case? e)
+     (if (equal? e #\S) 1 26)
+     (- (char->integer e) 96))))
 
 (define input
   (map (λ (e) (map to-number (string->list e)))
@@ -14,6 +20,9 @@
 
 (define visited (mutable-set))
 
+(define start '(0 0))
+(define target '(2 5))
+
 (define (element-at location)
   (let ([row (first location)]
         [column (second location)])
@@ -24,16 +33,31 @@
 (define (visitable? source-location target-location)
   (let* ([source-element (element-at source-location)]
          [target-element (element-at target-location)])
-    (cond [(or (equal? #f target-element) (set-member? visited target-element)) #f]
-          [(or (equal? target-element 0) (= (add1 source-element) target-element)) #t])))
+    (cond [(equal? #f target-element) #f]
+          [(set-member? visited target-location) #f]
+          [(= source-element target-element) #t]
+          [(= (add1 source-element) target-element) #t])))
 
 (define (visitable-neighbours-of location)
   (filter (λ (e) (visitable? location e))
           (list (location->up location) (location->down location)
                 (location->left location) (location->right location))))
 
-(define (solve start end)
-  (displayln "not implemented"))
+(define (solve target q steps)
+  (cond [(non-empty-queue? q)
+         (let* ([location (dequeue! q)]
+                [neighbours (visitable-neighbours-of location)])
+           (display "location=")(display location)(display "neighbors=")(displayln neighbours)
+           (cond [(member target neighbours) steps]
+                 [else
+                  (for ([i neighbours])
+                    (enqueue! q i)
+                    (set-add! visited i))
+                  (solve target q (add1 steps))]))]
+        [else 0]))
 
-(define start '(0 0))
-(define goal '(2 5))
+(define q (make-queue))
+(enqueue! q start)
+(set-add! visited start)
+
+(solve target q 1)

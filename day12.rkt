@@ -46,7 +46,6 @@
   (cond [(non-empty-queue? q)
          (let* ([location (dequeue! q)]
                 [neighbours (visitable-neighbours-of location)])
-           (display "location=")(display location)(display "neighbors=")(displayln neighbours)
            (cond [(member target neighbours) steps]
                  [else
                   (for ([i neighbours])

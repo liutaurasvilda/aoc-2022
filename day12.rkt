@@ -26,7 +26,7 @@
     (cond [(set-member? visited next-location) #f]
           [(equal? #f next-element) #f]
           [(equal? next-element 0) #t]
-          [else (= (add1 current-element) next-element) #t])))
+          [else (= (add1 current-element) next-element)])))
 
 (define (solve location visited paths)
   (displayln "not implemented"))

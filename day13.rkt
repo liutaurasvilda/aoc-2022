@@ -1,3 +1,3 @@
 #lang racket
 
-(define input (file->lines "input/day13.txt"))
+(define input (file->lines "input/day13_test.txt"))

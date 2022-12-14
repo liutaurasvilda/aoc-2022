@@ -58,4 +58,11 @@
     (set-add! visited node)
     (bfs target queue visited)))
 
+(define (solve2 target)
+  (first (sort (filter (λ (e) (> e 0)) (flatten (for/list ([i (in-range (length input))])
+    (for/list ([j (in-range (length (list-ref input 0)))])
+      (cond [(= (list-ref (list-ref input i) j) 1) (solve (list i j) target)]
+            [else -1]))))) <)))
+
 (solve '(20 0) '(20 68))
+(solve2 '(20 68))

@@ -33,10 +33,9 @@
 (define (visitable? source-location target-location)
   (let* ([source-element (element-at source-location)]
          [target-element (element-at target-location)])
-    (cond [(equal? #f target-element) #f]
-          [(set-member? visited target-location) #f]
-          [(= source-element target-element) #t]
-          [(= (add1 source-element) target-element) #t])))
+    (cond [(or (equal? #f target-element) (set-member? visited target-location)) #f]
+          [(< (add1 source-element) target-element) #f]
+          [else #t])))
 
 (define (visitable-neighbours-of location)
   (filter (λ (e) (visitable? location e))

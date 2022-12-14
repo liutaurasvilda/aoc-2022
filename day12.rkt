@@ -12,6 +12,8 @@
 (define location->left (λ (e) (list (first e) (- (second e) 1))))
 (define location->right (λ (e) (list (first e) (+ (second e) 1))))
 
+(define visited (mutable-set))
+
 (define (element-at location)
   (let ([row (first location)]
         [column (second location)])
@@ -19,20 +21,18 @@
            (list-ref (list-ref input row) column)]
           [else #f])))
 
-(define (allowed-from? location direction visited)
-  (let* ([next-location (direction location)]
-        [current-element (element-at location)]
-        [next-element (element-at next-location)])
-    (cond [(set-member? visited next-location) #f]
-          [(equal? #f next-element) #f]
-          [(equal? next-element 0) #t]
-          [else (= (add1 current-element) next-element)])))
+(define (visitable? source-location target-location)
+  (let* ([source-element (element-at source-location)]
+         [target-element (element-at target-location)])
+    (cond [(or (equal? #f target-element) (set-member? visited target-element)) #f]
+          [(or (equal? target-element 0) (= (add1 source-element) target-element)) #t])))
 
-(define (neighbours-of location)
-  (list (location->up location) (location->down location)
-        (location->left location) (location->right location)))
+(define (visitable-neighbours-of location)
+  (filter (λ (e) (visitable? location e))
+          (list (location->up location) (location->down location)
+                (location->left location) (location->right location))))
 
-(define (solve location visited)
+(define (solve start end)
   (displayln "not implemented"))
 
 (define start '(0 0))

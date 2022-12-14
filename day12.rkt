@@ -20,9 +20,6 @@
 
 (define visited (mutable-set))
 
-(define start '(0 0))
-(define target '(2 5))
-
 (define (element-at location)
   (let ([row (first location)]
         [column (second location)])
@@ -55,7 +52,7 @@
         [else 0]))
 
 (define q (make-queue))
-(enqueue! q start)
-(set-add! visited start)
+(enqueue! q '(0 0))
+(set-add! visited '(0 0))
 
-(solve target q 1)
+(solve '(2 5) q 1)

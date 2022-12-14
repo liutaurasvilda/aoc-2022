@@ -9,12 +9,14 @@
 
 (define input
   (map (λ (e) (map to-number (string->list e)))
-       (file->lines "input/day12_test.txt")))
+       (file->lines "input/day12.txt")))
 
 (define location->up (λ (e) (list (- (first e) 1) (second e))))
 (define location->down (λ (e) (list (+ (first e) 1) (second e))))
 (define location->left (λ (e) (list (first e) (- (second e) 1))))
 (define location->right (λ (e) (list (first e) (+ (second e) 1))))
+
+(struct node (location level) #:transparent)
 
 (define (element-at location)
   (let ([row (first location)]
@@ -35,23 +37,25 @@
           (list (location->up location) (location->down location)
                 (location->left location) (location->right location))))
 
-(define (bfs target queue visited steps)
+(define (bfs target queue visited)
   (cond [(non-empty-queue? queue)
-         (let* ([location (dequeue! queue)]
+         (let* ([current (dequeue! queue)]
+                [location (node-location current)]
                 [neighbours (visitable-neighbours-of location visited)])
-           (cond [(member target neighbours) steps]
+           (cond [(member target neighbours) (add1 (node-level current))]
                  [else
                   (for ([i neighbours])
-                    (enqueue! queue i)
+                    (enqueue! queue (node i (add1 (node-level current))))
                     (set-add! visited i))
-                  (bfs target queue visited (add1 steps))]))]
-        [else #f]))
+                  (bfs target queue visited)]))]
+        [else -1]))
 
 (define (solve start target)
   (let ([queue (make-queue)]
-        [visited (mutable-set)])
-    (enqueue! queue start)
-    (set-add! visited start)
-    (bfs target queue visited 1)))
+        [visited (mutable-set)]
+        [node (node start 0)])
+    (enqueue! queue node)
+    (set-add! visited node)
+    (bfs target queue visited)))
 
-(solve '(0 0) '(2 5))
+(solve '(20 0) '(20 68))

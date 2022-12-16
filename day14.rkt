@@ -58,10 +58,14 @@
 (define (rest sand h)
   (cond [(hash-has-key? h (first sand))
          (let ([inner-h (hash-ref h (first sand))])
-           (hash-set! inner-h (second sand) "o")) h]
+           (hash-set! inner-h (second sand) "o")) #t]
         [else
          (hash-set! h (first sand) (make-hash))
          (rest sand h)]))
 
-(define (pour-sand cave sand)
-  (displayln "not implemented"))
+(define (pour-sand sand h)
+  (cond [#f (displayln "TODO condition for abyss")]
+        [(can-fall? (down sand) h) (pour-sand (down sand) h)]
+        [(can-fall? (down-left sand) h) (pour-sand (down-left sand) h)]
+        [(can-fall? (down-right sand) h) (pour-sand (down-right sand) h)]
+        [(rest sand h) (pour-sand '(0 500) h)]))

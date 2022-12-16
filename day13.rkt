@@ -13,8 +13,6 @@
         [(in-order? (car input) (cadr input)) (solve (cddr input) (add1 index) (cons index indices))]
         [else (solve (cddr input) (add1 index) indices)]))
 
-(solve input 1 '())
-
 (check-equal? (in-order? '(1 1 3 1 1) '(1 1 5 1 1)) #t "pair 1")
 (check-equal? (in-order? '((1) (2 3 4)) '((1) 4)) #t "pair 2")
 (check-equal? (in-order? '(9) '((8 7 6))) #f "pair 3")

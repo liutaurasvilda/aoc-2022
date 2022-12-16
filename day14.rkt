@@ -32,12 +32,12 @@
 
 (define (fill-cave h coordinate)
   (cond [(hash-has-key? h (first coordinate))
-         (let ([nested-h (hash-ref h (first coordinate))])
-           (hash-set! nested-h (second coordinate) "#")) h]
+         (let ([inner-h (hash-ref h (first coordinate))])
+           (hash-set! inner-h (second coordinate) "#")) h]
         [else
          (hash-set! h (first coordinate) (make-hash))
-         (let ([nested-h (hash-ref h (first coordinate))])
-           (hash-set! nested-h (second coordinate) "#")) h]))
+         (let ([inner-h (hash-ref h (first coordinate))])
+           (hash-set! inner-h (second coordinate) "#")) h]))
 
 (define (build-cave path h)
   (cond [(empty? path) h]
@@ -50,6 +50,18 @@
 (define down (λ (e) (list (+ (first e) 1) (second e))))
 (define down-left (λ (e) (list (+ (first e) 1) (- (second e) 1))))
 (define down-right (λ (e) (list (+ (first e) 1) (+ (second e) 1))))
+
+(define (can-fall? sand h)
+  (let ([have-row (hash-has-key? h (first sand))])
+    (or (not have-row) (not (hash-has-key? (hash-ref h (first sand)) (second sand))))))
+
+(define (rest sand h)
+  (cond [(hash-has-key? h (first sand))
+         (let ([inner-h (hash-ref h (first sand))])
+           (hash-set! inner-h (second sand) "o")) h]
+        [else
+         (hash-set! h (first sand) (make-hash))
+         (rest sand h)]))
 
 (define (pour-sand cave sand)
   (displayln "not implemented"))

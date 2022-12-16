@@ -5,6 +5,10 @@
   (map (λ (e) (string->list e))
        (file->lines "input/day13.txt")))
 
+(define input2
+  (map (λ (e) (string->list e))
+       (cons "[[2]]" (cons "[[6]]" (file->lines "input/day13.txt")))))
+
 (define (c c)
   (char->integer c))
 
@@ -34,54 +38,11 @@
         [(in-order? (car input) (cadr input)) (solve (cddr input) (add1 index) (cons index indices))]
         [else (solve (cddr input) (add1 index) indices)]))
 
+(define (solve2 input)
+  (let ([sorted (sort input in-order?)])
+    (*
+     (add1 (index-of sorted '(#\[ #\[ #\2 #\] #\])))
+     (add1 (index-of sorted '(#\[ #\[ #\6 #\] #\]))))))
+
 (solve input 1 '())
-
-#|
-(check-equal?
- (in-order?
-  '(#\[ #\1 #\, #\1 #\, #\3 #\, #\1 #\, #\1 #\])
-  '(#\[ #\1 #\, #\1 #\, #\5 #\, #\1 #\, #\1 #\]))
- #t "pair 1")
-
-(check-equal?
- (in-order?
-  '(#\[ #\[ #\1 #\] #\, #\[ #\2 #\, #\3 #\, #\4 #\] #\])
-  '(#\[ #\[ #\1 #\] #\, #\4 #\]))
- #t "pair 2")
-
-(check-equal?
- (in-order?
-  '(#\[ #\9 #\])
-  '(#\[ #\[ #\8 #\, #\7 #\, #\6 #\] #\]))
- #f "pair 3")
-
-(check-equal?
- (in-order?
-  '(#\[ #\[ #\4 #\, #\4 #\] #\, #\4 #\, #\4 #\])
-  '(#\[ #\[ #\4 #\, #\4 #\] #\, #\4 #\, #\4 #\, #\4 #\]))
- #t "pair 4")
-
-(check-equal?
- (in-order?
-  '(#\[ #\7 #\, #\7 #\, #\7 #\, #\7 #\])
-  '(#\[ #\7 #\, #\7 #\, #\7 #\]))
- #f "pair 5")
-
-(check-equal?
- (in-order?
-  '(#\[ #\])
-  '(#\[ #\3 #\]))
- #t "pair 6")
-
-(check-equal?
- (in-order?
-  '(#\[ #\[ #\[ #\] #\] #\])
-  '(#\[ #\[ #\] #\]))
- #f "pair 7")
-
-(check-equal?
- (in-order?
-  '(#\[ #\1 #\, #\[ #\2 #\, #\[ #\3 #\, #\[ #\4 #\, #\[ #\5 #\, #\6 #\, #\7 #\] #\] #\] #\] #\, #\8 #\, #\9 #\])
-  '(#\[ #\1 #\, #\[ #\2 #\, #\[ #\3 #\, #\[ #\4 #\, #\[ #\5 #\, #\6 #\, #\0 #\] #\] #\] #\] #\, #\8 #\, #\9 #\]))
- #f "pair 8")
-|#
+(solve2 input2)

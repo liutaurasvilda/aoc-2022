@@ -46,3 +46,10 @@
          (build-cave (cdr path) h)]))
 
 (define cave (build-cave (foldr append '() (map (λ (e) (rocks e)) input)) (make-hash)))
+
+(define down (λ (e) (list (+ (first e) 1) (second e))))
+(define down-left (λ (e) (list (+ (first e) 1) (- (second e) 1))))
+(define down-right (λ (e) (list (+ (first e) 1) (+ (second e) 1))))
+
+(define (pour-sand cave coordinate)
+  (displayln "not implemented"))

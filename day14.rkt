@@ -51,5 +51,5 @@
 (define down-left (λ (e) (list (+ (first e) 1) (- (second e) 1))))
 (define down-right (λ (e) (list (+ (first e) 1) (+ (second e) 1))))
 
-(define (pour-sand cave coordinate)
+(define (pour-sand cave sand)
   (displayln "not implemented"))

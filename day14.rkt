@@ -28,5 +28,7 @@
              (list x j1))])))
 
 (define (path rocks)
-  (foldr append '() (for/list ([i (in-range 0 (- (length rocks) 1))])
-    (rock (list-ref rocks i) (list-ref rocks (add1 i))))))
+  (remove-duplicates (foldr append '() (for/list ([i (in-range 0 (- (length rocks) 1))])
+    (rock (list-ref rocks i) (list-ref rocks (add1 i)))))))
+
+(define paths (map (λ (e) (path e)) input))

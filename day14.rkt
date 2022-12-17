@@ -69,3 +69,9 @@
         [(can-fall? (down-left sand) h) (pour-sand (down-left sand) h)]
         [(can-fall? (down-right sand) h) (pour-sand (down-right sand) h)]
         [(rest sand h) (pour-sand '(0 500) h)]))
+
+(define (sum-resting h)
+  (length (filter (λ (e) (equal? e "o"))
+                  (flatten (map (λ (e) (hash-values e)) (hash-values h))))))
+
+;(sum-resting (pour-sand '(0 500) cave))

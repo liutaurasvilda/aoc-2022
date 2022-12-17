@@ -64,7 +64,7 @@
          (rest sand h)]))
 
 (define (pour-sand sand h)
-  (cond [#f (displayln "TODO condition for abyss")]
+  (cond [#f (displayln "TODO condition for abyss") h]
         [(can-fall? (down sand) h) (pour-sand (down sand) h)]
         [(can-fall? (down-left sand) h) (pour-sand (down-left sand) h)]
         [(can-fall? (down-right sand) h) (pour-sand (down-right sand) h)]

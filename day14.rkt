@@ -66,7 +66,8 @@
          (rest sand h)]))
 
 (define (pour-sand sand h abyss)
-  (cond [(> (first sand) abyss) h]
+  (cond [(not (can-fall? '(0 500) h)) h]
+        [(> (first sand) abyss) h]
         [(can-fall? (down sand) h) (pour-sand (down sand) h abyss)]
         [(can-fall? (down-left sand) h) (pour-sand (down-left sand) h abyss)]
         [(can-fall? (down-right sand) h) (pour-sand (down-right sand) h abyss)]
@@ -80,5 +81,14 @@
   (< (car x1) (car x2)))
 
 (define abyss (first (last (sort coordinates by-x))))
+(define abyss2 (+ abyss 2))
+
+(define (populate-floor h abyss2)
+  (hash-set! h abyss2 (make-hash))
+  (let ([inner-h (hash-ref h abyss2)])
+    (for ([i (in-inclusive-range 0 1000)])
+      (hash-set! inner-h i "#"))))
 
 (sum-resting (pour-sand '(0 500) cave abyss))
+(populate-floor cave abyss2)
+(sum-resting (pour-sand '(0 500) cave abyss2))

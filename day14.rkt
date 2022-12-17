@@ -7,7 +7,7 @@
 
 (define input
   (map (λ (e) (map to-number (string-split e " -> ")))
-       (file->lines "input/day14_test.txt")))
+       (file->lines "input/day14.txt")))
 
 (define start (λ (n1 n2) (if (< n1 n2) n1 n2)))
 (define end (λ (n1 n2) (if (> n1 n2) n1 n2)))
@@ -45,7 +45,9 @@
          (fill-cave h (car path))
          (build-cave (cdr path) h)]))
 
-(define cave (build-cave (foldr append '() (map (λ (e) (rocks e)) input)) (make-hash)))
+(define coordinates (foldr append '() (map (λ (e) (rocks e)) input)))
+
+(define cave (build-cave coordinates (make-hash)))
 
 (define down (λ (e) (list (+ (first e) 1) (second e))))
 (define down-left (λ (e) (list (+ (first e) 1) (- (second e) 1))))
@@ -63,15 +65,20 @@
          (hash-set! h (first sand) (make-hash))
          (rest sand h)]))
 
-(define (pour-sand sand h)
-  (cond [#f (displayln "TODO condition for abyss") h]
-        [(can-fall? (down sand) h) (pour-sand (down sand) h)]
-        [(can-fall? (down-left sand) h) (pour-sand (down-left sand) h)]
-        [(can-fall? (down-right sand) h) (pour-sand (down-right sand) h)]
-        [(rest sand h) (pour-sand '(0 500) h)]))
+(define (pour-sand sand h abyss)
+  (cond [(> (first sand) abyss) h]
+        [(can-fall? (down sand) h) (pour-sand (down sand) h abyss)]
+        [(can-fall? (down-left sand) h) (pour-sand (down-left sand) h abyss)]
+        [(can-fall? (down-right sand) h) (pour-sand (down-right sand) h abyss)]
+        [(rest sand h) (pour-sand '(0 500) h abyss)]))
 
 (define (sum-resting h)
   (length (filter (λ (e) (equal? e "o"))
                   (flatten (map (λ (e) (hash-values e)) (hash-values h))))))
 
-;(sum-resting (pour-sand '(0 500) cave))
+(define (by-x x1 x2)
+  (< (car x1) (car x2)))
+
+(define abyss (first (last (sort coordinates by-x))))
+
+(sum-resting (pour-sand '(0 500) cave abyss))

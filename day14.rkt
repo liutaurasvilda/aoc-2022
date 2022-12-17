@@ -73,3 +73,10 @@
 (sum-resting (pour-sand '(0 500) cave abyss))
 (populate-floor cave abyss2)
 (sum-resting (pour-sand '(0 500) cave abyss2))
+
+#|
+(for ([row (in-inclusive-range 0 183)])
+  (for ([column (in-inclusive-range 473 530)])
+    (display (if (hash-has-key? cave (list row column)) (hash-ref cave (list row column)) ".")))
+  (displayln ""))
+|#

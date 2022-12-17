@@ -30,22 +30,12 @@
           (for/list ([i (in-range 0 (- (length coordinates) 1))])
             (rock (list-ref coordinates i) (list-ref coordinates (add1 i)))))))
 
-(define (fill-cave h coordinate)
-  (cond [(hash-has-key? h (first coordinate))
-         (let ([inner-h (hash-ref h (first coordinate))])
-           (hash-set! inner-h (second coordinate) "#")) h]
-        [else
-         (hash-set! h (first coordinate) (make-hash))
-         (let ([inner-h (hash-ref h (first coordinate))])
-           (hash-set! inner-h (second coordinate) "#")) h]))
+(define coordinates (foldr append '() (map (λ (e) (rocks e)) input)))
 
 (define (build-cave path h)
-  (cond [(empty? path) h]
-        [else
-         (fill-cave h (car path))
-         (build-cave (cdr path) h)]))
-
-(define coordinates (foldr append '() (map (λ (e) (rocks e)) input)))
+  (for ([i (in-range 0 (length path))])
+    (hash-set! h (list-ref path i) "#"))
+  h)
 
 (define cave (build-cave coordinates (make-hash)))
 
@@ -54,16 +44,10 @@
 (define down-right (λ (e) (list (+ (first e) 1) (+ (second e) 1))))
 
 (define (can-fall? sand h)
-  (let ([have-row (hash-has-key? h (first sand))])
-    (or (not have-row) (not (hash-has-key? (hash-ref h (first sand)) (second sand))))))
+  (not (hash-has-key? h sand)))
 
 (define (rest sand h)
-  (cond [(hash-has-key? h (first sand))
-         (let ([inner-h (hash-ref h (first sand))])
-           (hash-set! inner-h (second sand) "o")) #t]
-        [else
-         (hash-set! h (first sand) (make-hash))
-         (rest sand h)]))
+  (hash-set! h sand "o") #t)
 
 (define (pour-sand sand h abyss)
   (cond [(not (can-fall? '(0 500) h)) h]
@@ -73,21 +57,18 @@
         [(can-fall? (down-right sand) h) (pour-sand (down-right sand) h abyss)]
         [(rest sand h) (pour-sand '(0 500) h abyss)]))
 
-(define (sum-resting h)
-  (length (filter (λ (e) (equal? e "o"))
-                  (flatten (map (λ (e) (hash-values e)) (hash-values h))))))
-
 (define (by-x x1 x2)
   (< (car x1) (car x2)))
 
+(define (populate-floor h abyss2)
+  (for ([i (in-inclusive-range 0 1000)])
+    (hash-set! h (list abyss2 i) "#")))
+
+(define (sum-resting h)
+  (length (filter (λ (e) (equal? e "o")) (hash-values h))))
+
 (define abyss (first (last (sort coordinates by-x))))
 (define abyss2 (+ abyss 2))
-
-(define (populate-floor h abyss2)
-  (hash-set! h abyss2 (make-hash))
-  (let ([inner-h (hash-ref h abyss2)])
-    (for ([i (in-inclusive-range 0 1000)])
-      (hash-set! inner-h i "#"))))
 
 (sum-resting (pour-sand '(0 500) cave abyss))
 (populate-floor cave abyss2)

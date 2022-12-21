@@ -25,18 +25,16 @@
 
 (define sensors-map (deploy-sensors input (make-hash)))
 
-(define (check-illegal x y sensors h)
+(define (is-illegal? x y sensors h)
   (cond [(empty? sensors) #f]
         [(equal? (first (hash-ref h (car sensors))) (list x y)) #f]
         [(or (< (mhd (car sensors) (list x y)) (second (hash-ref h (car sensors))))
              (= (mhd (car sensors) (list x y)) (second (hash-ref h (car sensors))))) #t]
-        [else (check-illegal x y (cdr sensors) h)]))
+        [else (is-illegal? x y (cdr sensors) h)]))
 
 (define (count-illegal x x-end y h count)
   (cond [(> x x-end) count]
-        [else
-         (let ([is-illegal (check-illegal x y (hash-keys h) h)])
-           (cond [(equal? is-illegal #t) (count-illegal (add1 x) x-end y h (add1 count))]
-                 [else (count-illegal (add1 x) x-end y h count)]))]))
+        [(is-illegal? x y (hash-keys h) h) (count-illegal (add1 x) x-end y h (add1 count))]
+        [else (count-illegal (add1 x) x-end y h count)]))
 
-(count-illegal -8000000 8000000 2000000 sensors-map 0)
+(count-illegal -6000000 6000000 2000000 sensors-map 0)

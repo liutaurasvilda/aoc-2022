@@ -18,8 +18,8 @@
   (cond [(empty? sensors) #t]
         [else
          (let* ([sensor (car sensors)]
-               [covered-area (second (hash-ref h sensor))]
-               [p-mhd (mhd sensor p)])
+                [covered-area (second (hash-ref h sensor))]
+                [p-mhd (mhd sensor p)])
            (cond [(or (< p-mhd covered-area) (= p-mhd covered-area)) #f]
                  [else (outside-mhd-of-sensors? p (cdr sensors) h)]))]))
 
@@ -81,6 +81,24 @@
    (location->left p)
    (location->right p)))
 
-;(find-sensors-corners (hash-keys sensors-map) sensors-map '())
+(define sensors-corners-neighbours
+  (foldr append '()
+         (map (λ (e) (neighbours e))
+              (find-sensors-corners (hash-keys sensors-map) sensors-map '()))))
+
+(define x-y-within-range-f
+  (λ (e)
+    (and
+     (and (or (> (first e) 0) (= (first e) 0))
+          (or (< (first e) 20) (= (first e) 20)))
+     (and (or (> (second e) 0) (= (second e) 0))
+          (or (< (second e) 20) (= (second e) 20))))))
+
+(define outside-sensors-f
+  (λ (e) (outside-mhd-of-sensors? e (hash-keys sensors-map) sensors-map)))
+
+(define distress (car (filter outside-sensors-f (filter x-y-within-range-f sensors-corners-neighbours))))
+
+(+ (* (car distress) 4000000) (cadr distress))
 
 ;(count-illegal -6000000 6000000 2000000 sensors-map 0)

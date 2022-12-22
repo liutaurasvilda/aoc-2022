@@ -46,6 +46,8 @@
         [(is-illegal? x y (hash-keys h) h) (count-illegal (add1 x) x-end y h (add1 count))]
         [else (count-illegal (add1 x) x-end y h count)]))
 
+;(count-illegal -6000000 6000000 2000000 sensors-map 0)
+
 (define (get-mhd-corners p mhd)
   (let* ([up (list (first p) (- (second p) mhd))]
          [down (list (first p) (+ (second p) mhd))]
@@ -86,19 +88,22 @@
          (map (λ (e) (neighbours e))
               (find-sensors-corners (hash-keys sensors-map) sensors-map '()))))
 
+(define legal-range 20)
+;(define legal-range 4000000)
+
 (define x-y-within-range-f
   (λ (e)
     (and
      (and (or (> (first e) 0) (= (first e) 0))
-          (or (< (first e) 20) (= (first e) 20)))
+          (or (< (first e) legal-range) (= (first e) legal-range)))
      (and (or (> (second e) 0) (= (second e) 0))
-          (or (< (second e) 20) (= (second e) 20))))))
+          (or (< (second e) legal-range) (= (second e) legal-range))))))
 
 (define outside-sensors-f
   (λ (e) (outside-mhd-of-sensors? e (hash-keys sensors-map) sensors-map)))
 
-(define distress (car (filter outside-sensors-f (filter x-y-within-range-f sensors-corners-neighbours))))
+(define potential-distress (filter x-y-within-range-f sensors-corners-neighbours))
 
-(+ (* (car distress) 4000000) (cadr distress))
+(define distress (first (filter outside-sensors-f potential-distress)))
 
-;(count-illegal -6000000 6000000 2000000 sensors-map 0)
+(+ (* (first distress) 4000000) (second distress))

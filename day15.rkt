@@ -48,45 +48,36 @@
 
 ;(count-illegal -6000000 6000000 2000000 sensors-map 0)
 
-(define (get-mhd-corners p mhd)
-  (let* ([up (list (first p) (- (second p) mhd))]
-         [down (list (first p) (+ (second p) mhd))]
-         [left (list (- (first p) mhd) (second p))]
-         [right (list (+ (first p) mhd) (second p))])
-    (list up down left right)))
+(define (get-mhd-outside-corners p mhd)
+  (let* ([up (list (first p) (- (- (second p) mhd) 1))]
+         [down (list (first p) (+ (+ (second p) mhd) 1))]
+         [left (list (- (- (first p) mhd) 1) (second p))]
+         [right (list (+ (+ (first p) mhd) 1) (second p))])
+    (list left up right down)))
 
-(define (find-sensors-corners sensors sensors-map result)
+(define (find-sensors-outside-corners sensors sensors-map result)
   (cond [(empty? sensors) result]
         [else
          (let* ([sensor (car sensors)]
                 [mhd (second (hash-ref sensors-map sensor))]
-                [corners (get-mhd-corners sensor mhd)])
-           (find-sensors-corners (cdr sensors) sensors-map (append result corners)))]))
+                [corners (get-mhd-outside-corners sensor mhd)])
+           (find-sensors-outside-corners (cdr sensors) sensors-map (append result (list corners))))]))
 
-(define location->up (λ (e) (list (first e) (- (second e) 1))))
-(define location->up-left (λ (e) (list (- (first e) 1) (- (second e) 1))))
-(define location->up-right (λ (e) (list (+ (first e) 1) (- (second e) 1))))
-(define location->down (λ (e) (list (first e) (+ (second e) 1))))
-(define location->down-left (λ (e) (list (- (first e) 1) (+ (second e) 1))))
-(define location->down-right (λ (e) (list (+ (first e) 1) (+ (second e) 1))))
-(define location->left (λ (e) (list (- (first e) 1) (second e))))
-(define location->right (λ (e) (list (+ (first e) 1) (second e))))
+(define (left-to-up left up)
+  (for/list ([i (in-inclusive-range 0 (abs (- (first left) (first up))))])
+    (list (+ (first left) i) (- (second left) i))))
 
-(define (neighbours p)
-  (list
-   (location->up p)
-   (location->up-left p)
-   (location->up-right p)
-   (location->down p)
-   (location->down-left p)
-   (location->down-right p)
-   (location->left p)
-   (location->right p)))
+(define (up-to-right up right)
+  (for/list ([i (in-inclusive-range 0 (abs (- (first up) (first right))))])
+    (list (+ (first up) i) (+ (second up) i))))
 
-(define sensors-corners-neighbours
-  (foldr append '()
-         (map (λ (e) (neighbours e))
-              (find-sensors-corners (hash-keys sensors-map) sensors-map '()))))
+(define (right-to-down right down)
+  (for/list ([i (in-inclusive-range 0 (abs (- (first right) (first down))))])
+    (list (- (first right) i) (+ (second right) i))))
+
+(define (down-to-left down left)
+  (for/list ([i (in-inclusive-range 0 (abs (- (first down) (first left))))])
+    (list (- (first down) i) (- (second down) i))))
 
 (define legal-range 20)
 ;(define legal-range 4000000)
@@ -102,8 +93,19 @@
 (define outside-sensors-f
   (λ (e) (outside-mhd-of-sensors? e (hash-keys sensors-map) sensors-map)))
 
-(define potential-distress (filter x-y-within-range-f sensors-corners-neighbours))
+(define (side-coordinates all-corners result)
+  (cond [(empty? all-corners) result]
+        [else
+         (let* ([corners (car all-corners)]
+                [sides
+                 (append
+                  (filter outside-sensors-f (filter x-y-within-range-f (left-to-up (first corners) (second corners))))
+                  (filter outside-sensors-f (filter x-y-within-range-f (up-to-right (second corners) (third corners))))
+                  (filter outside-sensors-f (filter x-y-within-range-f (right-to-down (third corners) (fourth corners))))
+                  (filter outside-sensors-f (filter x-y-within-range-f (down-to-left (fourth corners) (first corners)))))])
+           (side-coordinates (cdr all-corners) (append result sides)))]))
 
-(define distress (first (filter outside-sensors-f potential-distress)))
+(define reduced-side-coordinates
+  (first (side-coordinates (find-sensors-outside-corners (hash-keys sensors-map) sensors-map '()) '())))
 
-(+ (* (first distress) 4000000) (second distress))
+(+ (* (first reduced-side-coordinates) 4000000) (second reduced-side-coordinates))

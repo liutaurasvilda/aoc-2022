@@ -14,6 +14,15 @@
         [y2 (second p2)])
     (+ (abs (- x1 x2)) (abs (- y1 y2)))))
 
+(define (outside-mhd-of-sensors? coordinate sensors h)
+  (cond [(empty? sensors) #t]
+        [else
+         (let* ([sensor (car sensors)]
+               [covered-area (second (hash-ref h sensor))]
+               [coordinate-mhd (mhd sensor coordinate)])
+           (cond [(or (< coordinate-mhd covered-area) (= coordinate-mhd covered-area)) #f]
+                 [else (outside-mhd-of-sensors? coordinate (cdr sensors) h)]))]))
+
 (define (deploy-sensors input h)
   (cond [(empty? input) h]
         [else
@@ -37,4 +46,11 @@
         [(is-illegal? x y (hash-keys h) h) (count-illegal (add1 x) x-end y h (add1 count))]
         [else (count-illegal (add1 x) x-end y h count)]))
 
-(count-illegal -6000000 6000000 2000000 sensors-map 0)
+(define (find-distress sensors h range)
+  (for* ([x (in-inclusive-range 0 range)]
+         [y (in-inclusive-range 0 range)])
+        (when (outside-mhd-of-sensors? (list x y) sensors h)
+      (displayln (list x y)))))
+
+;(count-illegal -6000000 6000000 2000000 sensors-map 0)
+;(find-distress (hash-keys sensors-map) sensors-map 4000000)

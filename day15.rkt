@@ -5,7 +5,7 @@
          (list
           (list (string->number (car e)) (string->number (cadr e)))
           (list (string->number (caddr e)) (string->number (cadddr e)))))
-       (map (λ (e) (string-split e ",")) (file->lines "input/day15_test.txt"))))
+       (map (λ (e) (string-split e ",")) (file->lines "input/day15.txt"))))
 
 (define (mhd p1 p2)
   (let ([x1 (first p1)]
@@ -46,6 +46,7 @@
         [(is-illegal? x y (hash-keys h) h) (count-illegal (add1 x) x-end y h (add1 count))]
         [else (count-illegal (add1 x) x-end y h count)]))
 
+; PART 1
 ;(count-illegal -6000000 6000000 2000000 sensors-map 0)
 
 (define (get-mhd-outside-corners p mhd)
@@ -63,6 +64,19 @@
                 [corners (get-mhd-outside-corners sensor mhd)])
            (find-sensors-outside-corners (cdr sensors) sensors-map (append result (list corners))))]))
 
+(define legal-range 4000000)
+
+(define x-y-within-range-f
+  (λ (e)
+    (and
+     (and (or (> (first e) 0) (= (first e) 0))
+          (or (< (first e) legal-range) (= (first e) legal-range)))
+     (and (or (> (second e) 0) (= (second e) 0))
+          (or (< (second e) legal-range) (= (second e) legal-range))))))
+
+(define outside-sensors-f
+  (λ (e) (outside-mhd-of-sensors? e (hash-keys sensors-map) sensors-map)))
+
 (define (left-to-up left up)
   (for/list ([i (in-inclusive-range 0 (abs (- (first left) (first up))))])
     (list (+ (first left) i) (- (second left) i))))
@@ -79,20 +93,6 @@
   (for/list ([i (in-inclusive-range 0 (abs (- (first down) (first left))))])
     (list (- (first down) i) (- (second down) i))))
 
-(define legal-range 20)
-;(define legal-range 4000000)
-
-(define x-y-within-range-f
-  (λ (e)
-    (and
-     (and (or (> (first e) 0) (= (first e) 0))
-          (or (< (first e) legal-range) (= (first e) legal-range)))
-     (and (or (> (second e) 0) (= (second e) 0))
-          (or (< (second e) legal-range) (= (second e) legal-range))))))
-
-(define outside-sensors-f
-  (λ (e) (outside-mhd-of-sensors? e (hash-keys sensors-map) sensors-map)))
-
 (define (side-coordinates all-corners result)
   (cond [(empty? all-corners) result]
         [else
@@ -105,6 +105,7 @@
                   (filter outside-sensors-f (filter x-y-within-range-f (down-to-left (fourth corners) (first corners)))))])
            (side-coordinates (cdr all-corners) (append result sides)))]))
 
+; PART 2
 (define reduced-side-coordinates
   (first (side-coordinates (find-sensors-outside-corners (hash-keys sensors-map) sensors-map '()) '())))
 
